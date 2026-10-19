@@ -1,0 +1,50 @@
+{
+  "name": "teak",
+  "displayName": "Teak",
+  "description": "Teak language support for Visual Studio Code",
+  "version": "0.0.1",
+  "publisher": "teak-lang",
+  "license": "BSD-3-Clause",
+  "icon": "images/icon.png",
+  "galleryBanner": {
+    "color": "#1C1915",
+    "theme": "dark"
+  },
+  "keywords": [
+    "teak",
+    "syntax",
+    "highlighting"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/teak-lang/vscode-extension.git"
+  },
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "teak",
+        "aliases": [
+          "Teak",
+          "teak"
+        ],
+        "extensions": [
+          ".teak"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "teak",
+        "scopeName": "source.teak",
+        "path": "./syntaxes/teak.tmLanguage.json"
+      }
+    ]
+  }
+}

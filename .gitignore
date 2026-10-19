@@ -1,0 +1,11 @@
+node_modules/
+*.vsix
+.vscode/*
+!.vscode/launch.json
+
+.DS_Store
+Thumbs.db
+
+.tools/
+.idea/
+*.iml
