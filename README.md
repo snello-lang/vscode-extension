@@ -1,16 +1,12 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="images/logo-dark.png">
-    <img alt="Teak" src="images/logo-light.png" width="320">
+    <img alt="Snello" src="images/logo-light.png" width="220">
   </picture>
 </p>
 
 <p align="center">
-  <strong>Teak for Visual Studio Code</strong>
-</p>
-
-<p align="center">
-  Language support for the <a href="https://github.com/teak-lang/teak">Teak programming language</a>:<br>
+  Language support for the <a href="https://github.com/snello-lang/snello">Snello programming language</a>:<br>
   Go's syntax, memory safety without a garbage collector.
 </p>
 
@@ -25,9 +21,9 @@
 | **Brackets** | Matching, auto-closing pairs and surrounding a selection with brackets or quotes. |
 | **Indentation** | The next line indents after an opening bracket, and a closing one moves back out. |
 
-Every `.teak` file opens as Teak:
+Every `.snello` file opens as Snello:
 
-```teak
+```snello
 func (c mut Canvas) Add(s Shape) {
     c.shapes.Push(s)
 }
@@ -45,30 +41,30 @@ func area(s Shape) f64 {
 The extension is not on the Marketplace yet. Build it from this repository:
 
 ```sh
-git clone https://github.com/teak-lang/vscode-extension.git
+git clone https://github.com/snello-lang/vscode-extension.git
 cd vscode-extension
 npx @vscode/vsce package
-code --install-extension teak-0.0.1.vsix
+code --install-extension snello-0.0.1.vsix
 ```
 
 ## Development
 
-Open this folder in VS Code and press <kbd>F5</kbd>. A second window opens with the extension loaded; open any `.teak` file in it, such as one from the Teak repository's `examples/`. After editing the grammar, reload that window with <kbd>Cmd</kbd>+<kbd>R</kbd> to see the change.
+Open this folder in VS Code and press <kbd>F5</kbd>. A second window opens with the extension loaded; open any `.snello` file in it, such as one from the Snello repository's `examples/`. After editing the grammar, reload that window with <kbd>Cmd</kbd>+<kbd>R</kbd> to see the change.
 
 | Path | What it holds |
 |---|---|
-| `package.json` | The `teak` language, the `.teak` extension and the grammar it uses |
+| `package.json` | The `snello` language, the `.snello` extension and the grammar it uses |
 | `language-configuration.json` | Comments, brackets, auto-closing pairs and indentation |
-| `syntaxes/teak.tmLanguage.json` | The TextMate grammar behind the highlighting |
+| `syntaxes/snello.tmLanguage.json` | The TextMate grammar behind the highlighting |
 
 To see the scopes the grammar gives any token, run **Developer: Inspect Editor Tokens and Scopes** from the Command Palette.
 
 ## Roadmap
 
-- Errors as you type, from the Teak compiler's checker
-- A language server, `teak lsp`, for hover, go to definition, find references and rename
+- Errors as you type, from the Snello compiler's checker
+- A language server, `snello lsp`, for hover, go to definition, find references and rename
 - Completion
 
 ## License
 
-BSD 3-Clause, the same as Teak. See [LICENSE](LICENSE).
+BSD 3-Clause, the same as Snello. See [LICENSE](LICENSE).
