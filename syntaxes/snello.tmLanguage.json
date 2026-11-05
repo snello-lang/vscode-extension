@@ -1,8 +1,8 @@
 {
   "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
-  "name": "Teak",
-  "scopeName": "source.teak",
-  "fileTypes": ["teak"],
+  "name": "Snello",
+  "scopeName": "source.snello",
+  "fileTypes": ["snello"],
   "patterns": [
     { "include": "#comments" },
     { "include": "#strings" },
@@ -18,63 +18,63 @@
     "comments": {
       "patterns": [
         {
-          "name": "comment.block.teak",
+          "name": "comment.block.snello",
           "begin": "/\\*",
           "end": "\\*/",
-          "beginCaptures": { "0": { "name": "punctuation.definition.comment.teak" } },
-          "endCaptures": { "0": { "name": "punctuation.definition.comment.teak" } }
+          "beginCaptures": { "0": { "name": "punctuation.definition.comment.snello" } },
+          "endCaptures": { "0": { "name": "punctuation.definition.comment.snello" } }
         },
         {
-          "name": "comment.line.double-slash.teak",
+          "name": "comment.line.double-slash.snello",
           "begin": "//",
           "end": "$",
-          "beginCaptures": { "0": { "name": "punctuation.definition.comment.teak" } }
+          "beginCaptures": { "0": { "name": "punctuation.definition.comment.snello" } }
         }
       ]
     },
     "strings": {
       "patterns": [
         {
-          "name": "string.quoted.double.teak",
+          "name": "string.quoted.double.snello",
           "begin": "\"",
           "end": "\"",
-          "beginCaptures": { "0": { "name": "punctuation.definition.string.begin.teak" } },
-          "endCaptures": { "0": { "name": "punctuation.definition.string.end.teak" } },
+          "beginCaptures": { "0": { "name": "punctuation.definition.string.begin.snello" } },
+          "endCaptures": { "0": { "name": "punctuation.definition.string.end.snello" } },
           "patterns": [
             {
-              "name": "constant.character.escape.teak",
+              "name": "constant.character.escape.snello",
               "match": "\\\\(?:[abfnrtv\\\\\"]|[0-7]{3}|x\\h{2}|u\\h{4}|U\\h{8})"
             },
             {
-              "name": "invalid.illegal.unknown-escape.teak",
+              "name": "invalid.illegal.unknown-escape.snello",
               "match": "\\\\."
             },
             {
-              "name": "constant.other.placeholder.teak",
+              "name": "constant.other.placeholder.snello",
               "match": "%(?:%|[-+# 0]*(?:\\d+|\\*)?(?:\\.(?:\\d+|\\*))?[vTtbcdoOqxXUeEfFgGsp])"
             }
           ]
         },
         {
-          "name": "string.quoted.raw.teak",
+          "name": "string.quoted.raw.snello",
           "begin": "`",
           "end": "`",
-          "beginCaptures": { "0": { "name": "punctuation.definition.string.begin.teak" } },
-          "endCaptures": { "0": { "name": "punctuation.definition.string.end.teak" } }
+          "beginCaptures": { "0": { "name": "punctuation.definition.string.begin.snello" } },
+          "endCaptures": { "0": { "name": "punctuation.definition.string.end.snello" } }
         },
         {
-          "name": "string.quoted.single.teak",
+          "name": "string.quoted.single.snello",
           "begin": "'",
           "end": "'",
-          "beginCaptures": { "0": { "name": "punctuation.definition.string.begin.teak" } },
-          "endCaptures": { "0": { "name": "punctuation.definition.string.end.teak" } },
+          "beginCaptures": { "0": { "name": "punctuation.definition.string.begin.snello" } },
+          "endCaptures": { "0": { "name": "punctuation.definition.string.end.snello" } },
           "patterns": [
             {
-              "name": "constant.character.escape.teak",
+              "name": "constant.character.escape.snello",
               "match": "\\\\(?:[abfnrtv\\\\']|[0-7]{3}|x\\h{2}|u\\h{4}|U\\h{8})"
             },
             {
-              "name": "invalid.illegal.unknown-escape.teak",
+              "name": "invalid.illegal.unknown-escape.snello",
               "match": "\\\\."
             }
           ]
@@ -84,24 +84,24 @@
     "numbers": {
       "patterns": [
         {
-          "name": "constant.numeric.hex.teak",
+          "name": "constant.numeric.hex.snello",
           "match": "\\b0[xX](?:_?\\h)+\\b"
         },
         {
-          "name": "constant.numeric.binary.teak",
+          "name": "constant.numeric.binary.snello",
           "match": "\\b0[bB](?:_?[01])+\\b"
         },
         {
-          "name": "constant.numeric.octal.teak",
+          "name": "constant.numeric.octal.snello",
           "match": "\\b0[oO](?:_?[0-7])+\\b"
         },
         {
           "comment": "A fraction, an exponent or both; the dot is not a fraction when it starts ..=",
-          "name": "constant.numeric.float.teak",
+          "name": "constant.numeric.float.snello",
           "match": "\\b\\d(?:_?\\d)*(?:\\.(?!\\.)(?:\\d(?:_?\\d)*)?(?:[eE][+-]?\\d(?:_?\\d)*)?|[eE][+-]?\\d(?:_?\\d)*)"
         },
         {
-          "name": "constant.numeric.decimal.teak",
+          "name": "constant.numeric.decimal.snello",
           "match": "\\b\\d(?:_?\\d)*\\b"
         }
       ]
@@ -112,25 +112,25 @@
           "comment": "A method: func (recv) Name( or Name<...>(, at the start of a line so a closure is not taken for one",
           "match": "^\\s*(func)\\s*(\\()([^)]*)(\\))\\s*([A-Za-z_]\\w*)(?=\\s*(?:\\(|<[^<>(){}]*>\\s*\\())",
           "captures": {
-            "1": { "name": "storage.type.function.teak" },
-            "2": { "name": "punctuation.section.parens.begin.teak" },
+            "1": { "name": "storage.type.function.snello" },
+            "2": { "name": "punctuation.section.parens.begin.snello" },
             "3": { "patterns": [{ "include": "$self" }] },
-            "4": { "name": "punctuation.section.parens.end.teak" },
-            "5": { "name": "entity.name.function.teak" }
+            "4": { "name": "punctuation.section.parens.end.snello" },
+            "5": { "name": "entity.name.function.snello" }
           }
         },
         {
           "match": "\\b(func)\\s+([A-Za-z_]\\w*)",
           "captures": {
-            "1": { "name": "storage.type.function.teak" },
-            "2": { "name": "entity.name.function.teak" }
+            "1": { "name": "storage.type.function.snello" },
+            "2": { "name": "entity.name.function.snello" }
           }
         },
         {
           "match": "\\b(struct|enum|trait|type)\\s+([A-Za-z_]\\w*)",
           "captures": {
-            "1": { "name": "storage.type.teak" },
-            "2": { "name": "entity.name.type.teak" }
+            "1": { "name": "storage.type.snello" },
+            "2": { "name": "entity.name.type.snello" }
           }
         }
       ]
@@ -138,23 +138,23 @@
     "keywords": {
       "patterns": [
         {
-          "name": "keyword.control.teak",
+          "name": "keyword.control.snello",
           "match": "\\b(break|case|continue|default|defer|else|for|if|match|range|return|select|spawn|switch)\\b"
         },
         {
-          "name": "keyword.other.teak",
+          "name": "keyword.other.snello",
           "match": "\\b(package|import|impl)\\b"
         },
         {
-          "name": "storage.type.teak",
+          "name": "storage.type.snello",
           "match": "\\b(func|struct|enum|trait|type|var|const|map|chan)\\b"
         },
         {
-          "name": "storage.modifier.teak",
+          "name": "storage.modifier.snello",
           "match": "\\b(ref|mut)\\b"
         },
         {
-          "name": "variable.language.teak",
+          "name": "variable.language.snello",
           "match": "\\b(Self|super)\\b"
         }
       ]
@@ -163,24 +163,24 @@
       "comment": "Names every file sees without an import; after a dot they belong to a package or a value, so they are left alone there",
       "patterns": [
         {
-          "name": "constant.language.boolean.teak",
+          "name": "constant.language.boolean.snello",
           "match": "(?<!\\.)\\b(true|false)\\b"
         },
         {
-          "name": "constant.language.teak",
+          "name": "constant.language.snello",
           "match": "(?<!\\.)\\b(None|Some|Ok|Err)\\b"
         },
         {
-          "name": "support.type.builtin.teak",
+          "name": "support.type.builtin.snello",
           "match": "(?<!\\.)\\b(bool|string|error|i8|i16|i32|i64|int|u8|u16|u32|u64|uint|f32|f64|byte|rune|Ordering|Result)\\b"
         },
         {
           "comment": "The standard traits; followed by ( the name is a function of the program's own, such as a func Copy",
-          "name": "support.type.trait.teak",
+          "name": "support.type.trait.snello",
           "match": "(?<!\\.)\\b(Copy|Clone|Eq|Ord|Hash|Drop|Error|Add|Sub|Mul|Div|Rem|Neg)\\b(?!\\s*\\()"
         },
         {
-          "name": "support.function.builtin.teak",
+          "name": "support.function.builtin.snello",
           "match": "(?<!\\.)\\b(len|cap|make|take|panic|print)\\b(?=\\s*\\()"
         }
       ]
@@ -189,36 +189,36 @@
       "patterns": [
         {
           "comment": "A name followed by ( or by a type argument list and (",
-          "name": "entity.name.function.call.teak",
+          "name": "entity.name.function.call.snello",
           "match": "\\b[A-Za-z_]\\w*(?=\\s*(?:\\(|<[^<>(){}]*>\\s*\\())"
         }
       ]
     },
     "operators": {
       "patterns": [
-        { "name": "keyword.operator.coalesce.teak", "match": "\\?\\?" },
-        { "name": "keyword.operator.arrow.teak", "match": "=>" },
-        { "name": "keyword.operator.range.teak", "match": "\\.\\.=" },
-        { "name": "keyword.operator.ellipsis.teak", "match": "\\.\\.\\." },
-        { "name": "keyword.operator.assignment.define.teak", "match": ":=" },
-        { "name": "keyword.operator.channel.teak", "match": "<-" },
-        { "name": "keyword.operator.assignment.compound.teak", "match": "(?:<<|>>|&\\^|[-+*/%&|^])=" },
-        { "name": "keyword.operator.comparison.teak", "match": "==|!=|<=|>=" },
-        { "name": "keyword.operator.logical.teak", "match": "&&|\\|\\||!" },
-        { "name": "keyword.operator.increment.teak", "match": "\\+\\+|--" },
-        { "name": "keyword.operator.bitwise.teak", "match": "<<|>>|&\\^|[&|^]" },
-        { "name": "keyword.operator.comparison.teak", "match": "<|>" },
-        { "name": "keyword.operator.arithmetic.teak", "match": "[-+*/%]" },
-        { "name": "keyword.operator.assignment.teak", "match": "=" },
-        { "name": "keyword.operator.optional.teak", "match": "\\?" }
+        { "name": "keyword.operator.coalesce.snello", "match": "\\?\\?" },
+        { "name": "keyword.operator.arrow.snello", "match": "=>" },
+        { "name": "keyword.operator.range.snello", "match": "\\.\\.=" },
+        { "name": "keyword.operator.ellipsis.snello", "match": "\\.\\.\\." },
+        { "name": "keyword.operator.assignment.define.snello", "match": ":=" },
+        { "name": "keyword.operator.channel.snello", "match": "<-" },
+        { "name": "keyword.operator.assignment.compound.snello", "match": "(?:<<|>>|&\\^|[-+*/%&|^])=" },
+        { "name": "keyword.operator.comparison.snello", "match": "==|!=|<=|>=" },
+        { "name": "keyword.operator.logical.snello", "match": "&&|\\|\\||!" },
+        { "name": "keyword.operator.increment.snello", "match": "\\+\\+|--" },
+        { "name": "keyword.operator.bitwise.snello", "match": "<<|>>|&\\^|[&|^]" },
+        { "name": "keyword.operator.comparison.snello", "match": "<|>" },
+        { "name": "keyword.operator.arithmetic.snello", "match": "[-+*/%]" },
+        { "name": "keyword.operator.assignment.snello", "match": "=" },
+        { "name": "keyword.operator.optional.snello", "match": "\\?" }
       ]
     },
     "punctuation": {
       "patterns": [
-        { "name": "punctuation.separator.comma.teak", "match": "," },
-        { "name": "punctuation.terminator.teak", "match": ";" },
-        { "name": "punctuation.accessor.teak", "match": "\\." },
-        { "name": "punctuation.separator.colon.teak", "match": ":" }
+        { "name": "punctuation.separator.comma.snello", "match": "," },
+        { "name": "punctuation.terminator.snello", "match": ";" },
+        { "name": "punctuation.accessor.snello", "match": "\\." },
+        { "name": "punctuation.separator.colon.snello", "match": ":" }
       ]
     }
   }

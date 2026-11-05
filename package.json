@@ -1,9 +1,9 @@
 {
-  "name": "teak",
-  "displayName": "Teak",
-  "description": "Teak language support for Visual Studio Code",
+  "name": "snello",
+  "displayName": "Snello",
+  "description": "Snello language support for Visual Studio Code",
   "version": "0.0.1",
-  "publisher": "teak-lang",
+  "publisher": "snello-lang",
   "license": "BSD-3-Clause",
   "icon": "images/icon.png",
   "galleryBanner": {
@@ -11,13 +11,13 @@
     "theme": "dark"
   },
   "keywords": [
-    "teak",
+    "snello",
     "syntax",
     "highlighting"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/teak-lang/vscode-extension.git"
+    "url": "https://github.com/snello-lang/vscode-extension.git"
   },
   "engines": {
     "vscode": "^1.90.0"
@@ -28,22 +28,22 @@
   "contributes": {
     "languages": [
       {
-        "id": "teak",
+        "id": "snello",
         "aliases": [
-          "Teak",
-          "teak"
+          "Snello",
+          "snello"
         ],
         "extensions": [
-          ".teak"
+          ".snello"
         ],
         "configuration": "./language-configuration.json"
       }
     ],
     "grammars": [
       {
-        "language": "teak",
-        "scopeName": "source.teak",
-        "path": "./syntaxes/teak.tmLanguage.json"
+        "language": "snello",
+        "scopeName": "source.snello",
+        "path": "./syntaxes/snello.tmLanguage.json"
       }
     ]
   }
