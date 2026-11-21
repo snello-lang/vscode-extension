@@ -1,0 +1,111 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Snello Module File",
+  "scopeName": "source.snello.mod",
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#version-directive" },
+    { "include": "#require-by-version" },
+    { "include": "#require-by-directory" },
+    { "include": "#link-directive" },
+    { "include": "#unknown-directive" }
+  ],
+  "repository": {
+    "comments": {
+      "comment": "A comment begins a word, so the // of a repository's URL is no comment",
+      "name": "comment.line.double-slash.snello.mod",
+      "begin": "(?<!\\S)//",
+      "end": "$",
+      "beginCaptures": { "0": { "name": "punctuation.definition.comment.snello.mod" } }
+    },
+    "version-directive": {
+      "comment": "snello VERSION: the version of Snello the module is written for",
+      "begin": "^\\s*(snello)(?=\\s|$)(?:\\s+((?!//)\\S+))?",
+      "end": "$",
+      "beginCaptures": {
+        "1": { "name": "keyword.other.directive.snello.mod" },
+        "2": { "patterns": [{ "include": "#version" }, { "include": "#invalid-version" }] }
+      },
+      "patterns": [{ "include": "#comments" }, { "include": "#extra-word" }]
+    },
+    "require-by-version": {
+      "comment": "require NAME URL VERSION: a dependency by its repository and a tag's version, told from one by directory by its four words",
+      "begin": "^\\s*(require)\\s+((?!//)\\S+)\\s+((?!//)\\S+)\\s+((?!//)\\S+)",
+      "end": "$",
+      "beginCaptures": {
+        "1": { "name": "keyword.other.directive.snello.mod" },
+        "2": { "patterns": [{ "include": "#require-name" }, { "include": "#invalid-name" }] },
+        "3": {
+          "patterns": [
+            {
+              "comment": "A scheme git fetches from, in any case: a host after https:// and ssh://, an absolute path after file:",
+              "name": "markup.underline.link.snello.mod",
+              "match": "(?<!\\S)(?:(?i:https|ssh)://|(?i:file):/)\\S*"
+            },
+            { "name": "invalid.illegal.url.snello.mod", "match": "\\S+" }
+          ]
+        },
+        "4": { "patterns": [{ "include": "#tag-version" }, { "include": "#invalid-version" }] }
+      },
+      "patterns": [{ "include": "#comments" }, { "include": "#extra-word" }]
+    },
+    "require-by-directory": {
+      "comment": "require NAME DIR: a dependency in a directory on disk",
+      "begin": "^\\s*(require)(?=\\s|$)(?:\\s+((?!//)\\S+))?(?:\\s+((?!//)\\S+))?",
+      "end": "$",
+      "beginCaptures": {
+        "1": { "name": "keyword.other.directive.snello.mod" },
+        "2": { "patterns": [{ "include": "#require-name" }, { "include": "#invalid-name" }] },
+        "3": { "name": "string.unquoted.path.snello.mod" }
+      },
+      "patterns": [{ "include": "#comments" }, { "include": "#extra-word" }]
+    },
+    "link-directive": {
+      "comment": "link NAME: a system library, which the linker finds as -l does",
+      "begin": "^\\s*(link)(?=\\s|$)(?:\\s+((?!//)\\S+))?",
+      "end": "$",
+      "beginCaptures": {
+        "1": { "name": "keyword.other.directive.snello.mod" },
+        "2": {
+          "patterns": [
+            {
+              "comment": "A library's name, never a flag or a path",
+              "name": "entity.name.namespace.library.snello.mod",
+              "match": "(?<!\\S)(?!-)[^\\s/\\\\]+(?!\\S)"
+            },
+            { "name": "invalid.illegal.library.snello.mod", "match": "\\S+" }
+          ]
+        }
+      },
+      "patterns": [{ "include": "#comments" }, { "include": "#extra-word" }]
+    },
+    "unknown-directive": {
+      "begin": "^\\s*((?!//)\\S+)",
+      "end": "$",
+      "beginCaptures": { "1": { "name": "invalid.illegal.unknown-directive.snello.mod" } },
+      "patterns": [{ "include": "#comments" }]
+    },
+    "require-name": {
+      "comment": "One element of an import path: letters, digits, . - and _, never . or ..",
+      "name": "entity.name.namespace.snello.mod",
+      "match": "(?<!\\S)(?!\\.\\.?(?!\\S))[A-Za-z0-9._-]+(?!\\S)"
+    },
+    "version": {
+      "comment": "A Semantic Versioning 2.0 version, its pre-release and build metadata included",
+      "name": "constant.numeric.version.snello.mod",
+      "match": "(?<!\\S)(?:0|[1-9]\\d*)\\.(?:0|[1-9]\\d*)\\.(?:0|[1-9]\\d*)(?:-(?:0|[1-9]\\d*|\\d*[A-Za-z-][0-9A-Za-z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[A-Za-z-][0-9A-Za-z-]*))*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?(?!\\S)"
+    },
+    "tag-version": {
+      "comment": "A version that names a tag: no build metadata, which orders nothing",
+      "name": "constant.numeric.version.snello.mod",
+      "match": "(?<!\\S)(?:0|[1-9]\\d*)\\.(?:0|[1-9]\\d*)\\.(?:0|[1-9]\\d*)(?:-(?:0|[1-9]\\d*|\\d*[A-Za-z-][0-9A-Za-z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[A-Za-z-][0-9A-Za-z-]*))*)?(?!\\S)"
+    },
+    "invalid-version": { "name": "invalid.illegal.version.snello.mod", "match": "\\S+" },
+    "invalid-name": { "name": "invalid.illegal.name.snello.mod", "match": "\\S+" },
+    "extra-word": {
+      "comment": "A word past the last a directive takes",
+      "name": "invalid.illegal.extra-word.snello.mod",
+      "match": "(?!//)\\S+"
+    }
+  }
+}

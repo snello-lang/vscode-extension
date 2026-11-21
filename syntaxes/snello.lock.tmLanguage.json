@@ -1,0 +1,36 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Snello Lock File",
+  "scopeName": "source.snello.lock",
+  "patterns": [{ "include": "#record" }],
+  "repository": {
+    "record": {
+      "comment": "URL VERSION COMMIT HASH: a module the program reaches by version, as the build wrote it",
+      "begin": "^\\s*(\\S+)(?:\\s+(\\S+))?(?:\\s+(\\S+))?(?:\\s+(\\S+))?",
+      "end": "$",
+      "beginCaptures": {
+        "1": { "name": "markup.underline.link.snello.lock" },
+        "2": { "name": "constant.numeric.version.snello.lock" },
+        "3": { "name": "constant.numeric.hex.commit.snello.lock" },
+        "4": {
+          "patterns": [
+            {
+              "comment": "The build refuses a hash without its prefix",
+              "name": "string.unquoted.hash.snello.lock",
+              "match": "(?<!\\S)(h1:)\\S*",
+              "captures": { "1": { "name": "keyword.other.hash-prefix.snello.lock" } }
+            },
+            { "name": "invalid.illegal.hash.snello.lock", "match": "\\S+" }
+          ]
+        }
+      },
+      "patterns": [
+        {
+          "comment": "A word past the four of a line",
+          "name": "invalid.illegal.extra-word.snello.lock",
+          "match": "\\S+"
+        }
+      ]
+    }
+  }
+}
