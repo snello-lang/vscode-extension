@@ -37,6 +37,25 @@
           ".snello"
         ],
         "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "snello.mod",
+        "aliases": [
+          "Snello Module File"
+        ],
+        "filenames": [
+          "snello.mod"
+        ],
+        "configuration": "./language-configuration.mod.json"
+      },
+      {
+        "id": "snello.lock",
+        "aliases": [
+          "Snello Lock File"
+        ],
+        "filenames": [
+          "snello.lock"
+        ]
       }
     ],
     "grammars": [
@@ -44,6 +63,16 @@
         "language": "snello",
         "scopeName": "source.snello",
         "path": "./syntaxes/snello.tmLanguage.json"
+      },
+      {
+        "language": "snello.mod",
+        "scopeName": "source.snello.mod",
+        "path": "./syntaxes/snello.mod.tmLanguage.json"
+      },
+      {
+        "language": "snello.lock",
+        "scopeName": "source.snello.lock",
+        "path": "./syntaxes/snello.lock.tmLanguage.json"
       }
     ]
   }
