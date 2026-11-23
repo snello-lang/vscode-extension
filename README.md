@@ -16,6 +16,12 @@
 
 | | |
 |---|---|
+| **Errors as you type** | Every error the compiler reports, the borrow checker's included, on the word it names, as you type, saved or not, from Snello's own checker through its language server, `snello lsp`. |
+| **Hover** | On a name, its declaration as the checker types it, with its doc comment; on an expression, its type. |
+| **Go to definition** | From a name to its declaration, in the module, a module it requires or the standard library. |
+| **Find references and rename** | Every use of a name across the module, and a rename of all of them at once, refused when the program would no longer compile or would mean something else. |
+| **Outline and symbols** | A file's declarations as a tree, and every declaration of the module found by a few of its letters. |
+| **Completion** | After a dot, the members of what is before it; on a name, every name visible there; in an import, the packages. |
 | **Syntax highlighting** | Keywords, declarations and calls; the predeclared types, traits and functions; numbers in every base; strings with their escapes and `fmt` verbs; raw strings and characters. |
 | **Comments** | Toggle line comments with <kbd>Cmd</kbd>+<kbd>/</kbd> and block comments with <kbd>Shift</kbd>+<kbd>Option</kbd>+<kbd>A</kbd> (<kbd>Ctrl</kbd> and <kbd>Alt</kbd> elsewhere). |
 | **Brackets** | Matching, auto-closing pairs and surrounding a selection with brackets or quotes. |
@@ -39,22 +45,32 @@ func area(s Shape) f64 {
 
 ## Installation
 
+The extension starts Snello's language server, which is part of the `snello` command, so it needs Snello installed: the [Snello README](https://github.com/snello-lang/snello#quick-start) has the one-line install. The extension finds `snello` on the `PATH`; if it is elsewhere, set **Snello: Server Path** (`snello.serverPath`) to the command's absolute path, and the server starts again with it. Without `snello`, the extension says so once and highlights as before. In Restricted Mode, the folder's own settings cannot choose the command; the server, which only reads files, runs as anywhere else.
+
 The extension is not on the Marketplace yet. Build it from this repository:
 
 ```sh
 git clone https://github.com/snello-lang/vscode-extension.git
 cd vscode-extension
+npm ci
 npx @vscode/vsce package
 code --install-extension snello-0.0.1.vsix
 ```
 
+## Settings
+
+| Setting | What it does |
+|---|---|
+| `snello.serverPath` | The absolute path of the `snello` command the server runs as, `snello lsp`; empty, the first `snello` on the `PATH` |
+
 ## Development
 
-Open this folder in VS Code and press <kbd>F5</kbd>. A second window opens with the extension loaded; open any `.snello` file or `snello.mod` in it, such as one from the Snello repository's `examples/`. After editing the grammar, reload that window with <kbd>Cmd</kbd>+<kbd>R</kbd> to see the change.
+Run `npm ci` once, then open this folder in VS Code and press <kbd>F5</kbd>. A second window opens with the extension loaded; open any `.snello` file or `snello.mod` in it, such as one from the Snello repository's `examples/`. After editing the grammar, reload that window with <kbd>Cmd</kbd>+<kbd>R</kbd> to see the change.
 
 | Path | What it holds |
 |---|---|
-| `package.json` | The `snello` language and the `.snello` extension, the `snello.mod` and `snello.lock` languages and their file names, and the grammar each uses |
+| `package.json` | The `snello` language and the `.snello` extension, the `snello.mod` and `snello.lock` languages and their file names, the grammar each uses, the setting, what Restricted Mode allows, and the one dependency, `vscode-languageclient` |
+| `extension.js` | The client: it starts `snello lsp` the first time a Snello file opens in a window, starts it again when `snello.serverPath` changes, and stops it when the window closes; every feature is the server's |
 | `language-configuration.json` | Comments, brackets, auto-closing pairs and indentation |
 | `language-configuration.mod.json` | The line comment of `snello.mod` |
 | `syntaxes/snello.tmLanguage.json` | The TextMate grammar behind the highlighting |
@@ -65,9 +81,7 @@ To see the scopes the grammar gives any token, run **Developer: Inspect Editor T
 
 ## Roadmap
 
-- Errors as you type, from the Snello compiler's checker
-- A language server, `snello lsp`, for hover, go to definition, find references and rename
-- Completion
+- Formatting, on save and on demand, through the server
 
 ## License
 
