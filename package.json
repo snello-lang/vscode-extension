@@ -13,7 +13,8 @@
   "keywords": [
     "snello",
     "syntax",
-    "highlighting"
+    "highlighting",
+    "language server"
   ],
   "repository": {
     "type": "git",
@@ -25,6 +26,16 @@
   "categories": [
     "Programming Languages"
   ],
+  "main": "./extension.js",
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": "limited",
+      "description": "In Restricted Mode the folder cannot choose the snello command the language server runs.",
+      "restrictedConfigurations": [
+        "snello.serverPath"
+      ]
+    }
+  },
   "contributes": {
     "languages": [
       {
@@ -74,6 +85,20 @@
         "scopeName": "source.snello.lock",
         "path": "./syntaxes/snello.lock.tmLanguage.json"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "Snello",
+      "properties": {
+        "snello.serverPath": {
+          "type": "string",
+          "default": "",
+          "scope": "machine-overridable",
+          "markdownDescription": "The absolute path of the `snello` command the language server runs as `snello lsp`. Empty, the first `snello` on the `PATH`."
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
   }
 }
