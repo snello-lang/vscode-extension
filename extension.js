@@ -23,13 +23,16 @@ const clientName = "Snello";
 const openSettings = "Open Settings";
 
 let client; // the running client, set once its start has succeeded
+let output; // the server's log, one for every start in the window
 let reportedFor; // the setting's value the last report was about
 let queue = Promise.resolve(); // every start and stop, one after another
 
 // activate starts the server, and starts it again with a new command
 // when the setting that names it changes.
 function activate(context) {
+	output = vscode.window.createOutputChannel(clientName);
 	context.subscriptions.push(
+		output,
 		vscode.workspace.onDidChangeConfiguration((event) => {
 			if (event.affectsConfiguration(`${section}.${serverPathSetting}`)) {
 				enqueue(async () => {
@@ -68,10 +71,12 @@ async function start() {
 	const serverOptions = { command: executable, args: serverArgs };
 	const clientOptions = {
 		documentSelector: [{ scheme: "file", language: languageId }],
+		outputChannel: output,
 	};
 	const created = new LanguageClient(languageId, clientName, serverOptions, clientOptions);
 	await created.start(); // a failure is the client's to report, with the server's own words in its output
 	client = created;
+	reportedFor = undefined; // a command lost again is reported again
 }
 
 async function stop() {
@@ -88,11 +93,12 @@ function serverSetting() {
 	return vscode.workspace.getConfiguration(section).get(serverPathSetting, "").trim();
 }
 
-// onPath returns the first snello on the PATH that may be run.
+// onPath returns the first snello on the PATH that may be run, in a
+// directory the PATH names by its absolute path.
 function onPath() {
 	for (const entry of (process.env.PATH || "").split(path.delimiter)) {
 		const dir = entry.replace(/^"(.*)"$/, "$1");
-		if (dir === "") {
+		if (!path.isAbsolute(dir)) {
 			continue;
 		}
 
