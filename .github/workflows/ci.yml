@@ -38,7 +38,7 @@ jobs:
       - name: Install
         run: npm ci
       - name: Each module parses
-        run: for f in *.js test/*.js; do node --check "$f"; done
+        run: for f in *.js release/*.js test/*.js; do node --check "$f"; done
       - name: Test
         run: npm test
       - name: Package

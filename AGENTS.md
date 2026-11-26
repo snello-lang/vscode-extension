@@ -24,7 +24,7 @@ The VS Code extension for the [Snello programming language](https://github.com/s
 
 ### Definition of done, for every task
 
-- Every module parses, `node --check`, and `npm test` passes.
+- Every module parses, `node --check` on `*.js`, `release/*.js` and `test/*.js`, and `npm test` passes.
 - Every new `.js` file carries the license header.
 - `npm run package` builds `bin/snello.vsix`, and the issue's verification steps have been run from it; `bin/` is never committed.
 - `README.md` says what the change adds, in its features, its settings and its table of files.
@@ -34,3 +34,4 @@ The VS Code extension for the [Snello programming language](https://github.com/s
 - **One dependency**, `vscode-languageclient`. The tests use Node's own `node:test` and `node:assert`.
 - **Nothing runs in Restricted Mode**: no program, test, build or debugger, and the folder's settings cannot choose the command or the debugger.
 - **Every feature comes from the command or its server**, so that another editor gets the same by starting the same command.
+- **Releases are cut by a tag a maintainer pushes**, from a pull request that raised the version and wrote its changelog section; never by a push, a pull request or a schedule, and never by an agent. A release stays a pre-release while the Snello it needs, `snello.minimum`, is one.
