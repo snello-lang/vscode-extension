@@ -9,9 +9,10 @@
 // process a package, the tests picked by -run; a subtest joins the tree
 // under its test as it runs, a failed check is shown at its line, with
 // a diff of what it got and wanted when it compared two values, and
-// what a test printed is its output. The continuous run runs a
-// package's tests again when one of its files is saved. What is
-// decided, with no editor in it, is tree.js's.
+// what a test printed is its output. The Debug profile debugs the
+// chosen tests through debug.js; the continuous run runs a package's
+// tests again when one of its files is saved. What is decided, with no
+// editor in it, is tree.js's.
 
 "use strict";
 
@@ -35,11 +36,12 @@ const changedFiles = new Set(); // the documents edited since the last refresh, 
 const packages = new Map(); // by directory: { item, files: Map(uri → item), tests: Map(name → item), subtests: Map(name → item) }
 
 // activate makes the controller, reads the tree when the server starts
-// and as files change, and adds the Run and continuous profiles.
+// and as files change, and adds the Run, Debug and continuous profiles.
 function activate(context) {
 	controller = vscode.tests.createTestController(command.languageId, controllerLabel);
 	controller.refreshHandler = () => refresh();
 	controller.createRunProfile("Run", vscode.TestRunProfileKind.Run, (request, token) => runTests(request, token), true, undefined, true);
+	controller.createRunProfile("Debug", vscode.TestRunProfileKind.Debug, (request) => debugTests(request), true);
 	const watcher = vscode.workspace.createFileSystemWatcher("**/*.snello");
 	context.subscriptions.push(
 		controller,
@@ -429,6 +431,33 @@ function watch(request, token) {
 			last.cancel();
 			last.dispose();
 		}
+	});
+}
+
+// debugTests debugs the tests the request names, in the first package
+// it names: the tests picked by -run, or the benchmarks by -bench, in a
+// test program built for the debugger.
+async function debugTests(request) {
+	if (!trust.allowed()) {
+		return;
+	}
+
+	const [dir, s] = [...tree.selectionsOf(roots(), request.include, request.exclude)][0] || [];
+	if (dir === undefined) {
+		return;
+	}
+
+	const names = [...s.tests];
+	const args = s.all ? [] : names.length > 0 ? ["-run", pattern(names)] : ["-run", noTests, "-bench", pattern([...s.benchmarks])];
+	const folder = vscode.workspace.getWorkspaceFolder(vscode.Uri.file(dir));
+	await vscode.debug.startDebugging(folder, {
+		type: command.debugType,
+		request: "launch",
+		name: `Debug ${names.length === 1 ? names[0] : path.basename(dir)}`,
+		mode: "test",
+		program: dir,
+		args,
+		cwd: dir,
 	});
 }
 
