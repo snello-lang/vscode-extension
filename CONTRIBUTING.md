@@ -29,15 +29,6 @@ code --install-extension bin/snello.vsix
 
 `npm test` runs the tests of the parts that need no editor, such as the reading of `snello test -json`, under Node's own test runner, so they add no dependency. `npm run package` writes the extension to `bin/snello.vsix`; `bin/` is never committed. What needs the editor, the Testing view, a run, the debugger, the highlighting, is tried by hand from the `.vsix` the change builds, on a module with tests, with a failing one among them, and a program; CI builds the `.vsix` of every pull request and attaches it to the run.
 
-## Building it yourself
-
-```sh
-npm run package
-code --install-extension bin/snello.vsix
-```
-
-`npm run package` writes the extension to `bin/snello.vsix`, the file a release publishes; `bin/` is never committed.
-
 ## A pull request
 
 - **One issue, one pull request.** Keep it to the issue's scope, and check off its acceptance criteria as you meet them.
@@ -50,16 +41,18 @@ code --install-extension bin/snello.vsix
 
 ## Releasing
 
-The maintainers decide what is released and when; nothing is released by a push, a pull request or a schedule. A release is prepared in a pull request, which raises `version` in `package.json` and writes the version's section in `CHANGELOG.md`, and is cut by the tag `vMAJOR.MINOR.PATCH` a maintainer pushes on its merge:
+The maintainers decide what is released and when; nothing is released by a push, a pull request or a schedule. A release is prepared in a pull request, which raises `version` in `package.json` and writes the version's section in `CHANGELOG.md`, and is cut by the tag a maintainer pushes on its merge, `v` and the version:
 
 ```sh
-git tag v0.1.1
-git push origin v0.1.1
+git tag v0.1.0-alpha.2
+git push origin v0.1.0-alpha.2
 ```
 
-`.github/workflows/release.yml` then checks that the tag names `package.json`'s version, runs the checks and the tests, packages the extension, and publishes a GitHub release with the extension as `snello-0.1.1.vsix` and as `snello.vsix`, their `SHA256SUMS`, build provenance for each, and the version's section of `CHANGELOG.md` as its notes. Run by hand from the Actions page, the workflow is a dry run: it builds and checks as a tag does, and publishes nothing.
+`.github/workflows/release.yml` then checks that the tag names `package.json`'s version, runs the checks and the tests, packages the extension, and publishes a GitHub release with the extension as `snello-0.1.0-alpha.2.vsix` and as `snello.vsix`, their `SHA256SUMS`, build provenance for each, and the version's section of `CHANGELOG.md` as its notes. Run by hand from the Actions page, the workflow is a dry run: it builds and checks as a tag does, and publishes nothing.
 
-A version is `MAJOR.MINOR.PATCH` with no suffix, since VS Code takes none, counting up from 0.1.0. A changelog heading marked `(pre-release)`, `## 0.1.1 (pre-release)`, makes the release a pre-release. While the Snello the extension needs, `snello.minimum` in `package.json`, is itself a pre-release, every release of the extension is one: the workflow refuses a release that is not. Raise `snello.minimum` when a release needs a newer Snello, and the README's line with it.
+A version is written as Snello's are. While the extension is built alongside an alpha of Snello, it carries a pre-release suffix of its own, `0.1.0-alpha.1`, `0.1.0-alpha.2`, and each is published as a pre-release; from `0.1.0`, which comes with Snello's 0.1.0, it carries none, and is a release. Each release has its section in `CHANGELOG.md`, `## 0.1.0-alpha.2` and what it changes, which is the release's notes and the extension's Changelog tab; the workflow refuses a version whose section is missing or empty, and CI runs the same check on every pull request.
+
+`package.json`'s `snello.minimum` names the oldest Snello the release works with, which the README says too. While that Snello is a pre-release, the extension's release must be one: the workflow refuses a version without a suffix. That Snello must be released before the extension's tag is pushed, which the workflow checks too. Raise `snello.minimum` when a release needs a newer Snello, and the README's line with it. The Marketplace takes no version with a suffix, so once it is published to, it gets the releases from 0.1.0 on.
 
 ## Conduct
 

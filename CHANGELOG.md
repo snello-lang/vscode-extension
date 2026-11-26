@@ -1,8 +1,6 @@
 # Changelog
 
-Each release's section is its notes on the Releases page, and the release workflow refuses a version without one. A heading marked `(pre-release)` publishes the release as a pre-release, as the extension's releases are while Snello is in alpha.
-
-## 0.1.0 (pre-release)
+## 0.1.0-alpha.1
 
 The extension's first download. It needs Snello 0.1.0-alpha.2 or later: an older `snello` still checks as you type, but has no tests, runs or debugging to offer.
 
