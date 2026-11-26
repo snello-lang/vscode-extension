@@ -1,0 +1,194 @@
+# Makes a release, on a tag vX.Y.Z a maintainer pushes on the merge of
+# the pull request that prepared it, and on nothing else: no push, no
+# pull request and no schedule makes one. A run started by hand from the
+# Actions page is a dry run, which builds and checks exactly as a tag
+# does and publishes nothing. No version is typed here: release.js reads
+# it from package.json, refuses a tag that differs and a version whose
+# section in CHANGELOG.md is missing or empty, and makes a version with
+# a suffix, 0.1.0-alpha.1, a pre-release, which the release must be
+# while the Snello it needs, package.json's snello.minimum, is one.
+# That Snello must be released already, or the release would send its
+# users after a Snello they cannot install.
+#
+# The build runs with read access alone, since it runs npm's code: the
+# install, the tests and the packager. The publish job holds the right
+# to write the release and to sign the provenance, and runs no npm code:
+# it takes the build's files, attests them and publishes them. The
+# release holds the extension twice, snello-X.Y.Z.vsix and snello.vsix,
+# the same file; SHA256SUMS of both; and build provenance for each,
+# which `gh attestation verify` checks. The notes are the version's
+# section of CHANGELOG.md. The Marketplace and Open VSX are not
+# published to; their steps are left off below until they are.
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch: # a dry run: built and checked as a tag is, published never
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  build:
+    name: Check and package
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      kind: ${{ steps.version.outputs.kind }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+      - name: Install
+        run: npm ci
+      - name: Each module parses
+        run: for f in *.js release/*.js test/*.js; do node --check "$f"; done
+      - name: Test
+        run: npm test
+      - name: Check the version, the tag and the kind of release
+        id: version
+        env:
+          TAG: ${{ github.event_name == 'push' && github.ref_name || '' }} # a dry run checks the release's own tag
+        run: |
+          node release/release.js check $TAG
+          version=$(node release/release.js version)
+          kind=$(node release/release.js kind)
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "kind=$kind" >> "$GITHUB_OUTPUT"
+          mkdir -p bin
+          node release/release.js notes > bin/notes.md
+      - name: Check that the Snello it needs is released
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          snello=$(node release/release.js snello)
+          if ! gh release view "v$snello" --repo snello-lang/snello > /dev/null; then
+            echo "Snello $snello, which package.json's snello.minimum names, is not released: release it first."
+            exit 1
+          fi
+      - name: Package
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          KIND: ${{ steps.version.outputs.kind }}
+        run: |
+          if [ "$KIND" = pre-release ]; then
+            npm run package -- --pre-release
+          else
+            npm run package
+          fi
+          cp bin/snello.vsix "bin/snello-$VERSION.vsix"
+          (cd bin && sha256sum "snello-$VERSION.vsix" snello.vsix > SHA256SUMS)
+          cat bin/SHA256SUMS
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release
+          path: |
+            bin/*.vsix
+            bin/SHA256SUMS
+            bin/notes.md
+          if-no-files-found: error
+
+  publish:
+    name: Publish
+    needs: build
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write # the release and its files
+      id-token: write # the provenance's signing identity
+      attestations: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release
+          path: bin
+      - uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: bin/*.vsix
+      - name: Publish the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.build.outputs.version }}
+          KIND: ${{ needs.build.outputs.kind }}
+        run: |
+          flag=""
+          if [ "$KIND" = pre-release ]; then
+            flag=--prerelease
+          fi
+          gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --verify-tag --title "$VERSION" --notes-file bin/notes.md $flag \
+            "bin/snello-$VERSION.vsix" bin/snello.vsix bin/SHA256SUMS
+
+  # The Marketplace and Open VSX are not published to: the jobs stay here,
+  # off, until they are. Each runs the store's own tool, npm code, so each
+  # holds its store's token and nothing else, and fails when its token is
+  # missing rather than release without the store. The Marketplace takes
+  # no version with a suffix, so it gets the releases from 0.1.0 on.
+  #
+  # marketplace:
+  #   name: Publish to the Marketplace
+  #   needs: [build, publish]
+  #   if: needs.build.outputs.kind == 'release'
+  #   runs-on: ubuntu-latest
+  #   timeout-minutes: 10
+  #   permissions: {}
+  #   steps:
+  #     - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+  #       with:
+  #         name: release
+  #         path: bin
+  #     - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+  #       with:
+  #         node-version: 22
+  #     - name: Publish
+  #       env:
+  #         VSCE_PAT: ${{ secrets.VSCE_PAT }}
+  #         KIND: ${{ needs.build.outputs.kind }}
+  #       run: |
+  #         if [ -z "$VSCE_PAT" ]; then
+  #           echo "No VSCE_PAT secret: add the Marketplace publisher's token."
+  #           exit 1
+  #         fi
+  #         flag=""
+  #         if [ "$KIND" = pre-release ]; then
+  #           flag=--pre-release
+  #         fi
+  #         npx --yes @vscode/vsce@4.1.1 publish --packagePath bin/snello.vsix $flag
+  #
+  # openvsx:
+  #   name: Publish to Open VSX
+  #   needs: [build, publish]
+  #   runs-on: ubuntu-latest
+  #   timeout-minutes: 10
+  #   permissions: {}
+  #   steps:
+  #     - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+  #       with:
+  #         name: release
+  #         path: bin
+  #     - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+  #       with:
+  #         node-version: 22
+  #     - name: Publish
+  #       env:
+  #         OVSX_PAT: ${{ secrets.OVSX_PAT }}
+  #         KIND: ${{ needs.build.outputs.kind }}
+  #       run: |
+  #         if [ -z "$OVSX_PAT" ]; then
+  #           echo "No OVSX_PAT secret: add the Open VSX namespace's token."
+  #           exit 1
+  #         fi
+  #         flag=""
+  #         if [ "$KIND" = pre-release ]; then
+  #           flag=--pre-release
+  #         fi
+  #         npx --yes ovsx@1.4.0 publish bin/snello.vsix $flag

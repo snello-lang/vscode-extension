@@ -2,7 +2,7 @@
   "name": "snello",
   "displayName": "Snello",
   "description": "Snello language support for Visual Studio Code: errors as you type, navigation, tests, running and debugging",
-  "version": "0.0.1",
+  "version": "0.1.0-alpha.1",
   "publisher": "snello-lang",
   "license": "BSD-3-Clause",
   "icon": "images/icon.png",
@@ -24,6 +24,9 @@
   },
   "engines": {
     "vscode": "^1.91.0"
+  },
+  "snello": {
+    "minimum": "0.1.0-alpha.2"
   },
   "categories": [
     "Programming Languages",

@@ -50,15 +50,13 @@ func area(s Shape) f64 {
 
 The extension starts Snello's language server, which is part of the `snello` command, so it needs Snello installed: the [Snello README](https://github.com/snello-lang/snello#quick-start) has the one-line install. The extension finds `snello` on the `PATH`; if it is elsewhere, set **Snello: Server Path** (`snello.serverPath`) to the command's absolute path, and the server starts again with it. **Snello: Restart Language Server** starts it again at any time, after a new `snello` is installed for instance. Without `snello`, the extension says so once and highlights as before. In Restricted Mode, the folder's own settings cannot choose the command; the server, which only reads files, runs as anywhere else.
 
-The extension is not on the Marketplace yet. Build it from this repository:
+The extension needs Snello 0.1.0-alpha.2 or later for its tests, runs and debugging; an older `snello` still checks as you type. It is not on the Marketplace yet: download `snello.vsix` from the newest release on the [Releases page](https://github.com/snello-lang/vscode-extension/releases), and install it from the Command Palette with **Extensions: Install from VSIX…**, or from a terminal:
 
 ```sh
-git clone https://github.com/snello-lang/vscode-extension.git
-cd vscode-extension
-npm ci
-npm run package
-code --install-extension bin/snello.vsix
+code --install-extension snello.vsix
 ```
+
+Each release lists `SHA256SUMS` beside it, and `gh attestation verify snello.vsix --repo snello-lang/vscode-extension` checks that the file is the one this repository's release workflow built. The releases are pre-releases while Snello is in alpha. To build the extension from this repository instead, [CONTRIBUTING.md](CONTRIBUTING.md) says how.
 
 ## Settings
 
@@ -104,7 +102,9 @@ The extension needs VS Code 1.91 or later. Run `npm ci` once, then open this fol
 | `dap.js` | The Debug Adapter Protocol's framing, and the two messages the relay changes |
 | `processes.js` | The `snello` command started in a process group of its own, so that a stop ends it and all it started |
 | `trust.js` | Nothing runs in Restricted Mode |
-| `test/` | The tests of `events.js`, `tree.js`, `processes.js`, `launch.js` and `dap.js`, under Node's own runner: `npm test` |
+| `release/release.js` | What a release is: the version, the tag it must have, whether it is a pre-release, and its notes from `CHANGELOG.md` |
+| `CHANGELOG.md` | Each release's notes, its heading saying whether it is a pre-release |
+| `test/` | The tests of `events.js`, `tree.js`, `processes.js`, `launch.js`, `dap.js` and `release/release.js`, under Node's own runner: `npm test` |
 | `language-configuration.json` | Comments, brackets, auto-closing pairs and indentation |
 | `language-configuration.mod.json` | The line comment of `snello.mod` |
 | `syntaxes/snello.tmLanguage.json` | The TextMate grammar behind the highlighting |

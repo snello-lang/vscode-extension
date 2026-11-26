@@ -38,9 +38,11 @@ jobs:
       - name: Install
         run: npm ci
       - name: Each module parses
-        run: for f in *.js test/*.js; do node --check "$f"; done
+        run: for f in *.js release/*.js test/*.js; do node --check "$f"; done
       - name: Test
         run: npm test
+      - name: The release this version would be
+        run: node release/release.js check # a release's pull request shows a missing section or a wrong kind before its merge
       - name: Package
         run: npm run package
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

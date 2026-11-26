@@ -21,7 +21,7 @@ Open the folder in VS Code and press <kbd>F5</kbd>: a second window opens with t
 ## Testing a change
 
 ```sh
-for f in *.js test/*.js; do node --check "$f"; done
+for f in *.js release/*.js test/*.js; do node --check "$f"; done
 npm test
 npm run package
 code --install-extension bin/snello.vsix
@@ -38,6 +38,21 @@ code --install-extension bin/snello.vsix
 - **The style.** Every `.js` file starts with the license header the others show; a comment says what the code does and why, in full sentences. JSON and Markdown go without the header, and Markdown is not hard-wrapped.
 - **Conventional Commits.** Commit messages and the pull request's title are `type(scope)!: subject`: the type one of `feat`, `fix`, `docs`, `test`, `ci`, `chore`, `refactor`, `perf` or `revert`, the subject in lower case with no period, body lines at most 100 characters. CI checks both, and a squash merge makes the title the commit on `main`.
 - **You are the author.** You must be able to explain and defend every line in review. Contributors working with AI tools also follow [AGENTS.md](AGENTS.md), which forbids crediting a tool as an author.
+
+## Releasing
+
+The maintainers decide what is released and when; nothing is released by a push, a pull request or a schedule. A release is prepared in a pull request, which raises `version` in `package.json` and writes the version's section in `CHANGELOG.md`, and is cut by the tag a maintainer pushes on its merge, `v` and the version:
+
+```sh
+git tag v0.1.0-alpha.2
+git push origin v0.1.0-alpha.2
+```
+
+`.github/workflows/release.yml` then checks that the tag names `package.json`'s version, runs the checks and the tests, packages the extension, and publishes a GitHub release with the extension as `snello-0.1.0-alpha.2.vsix` and as `snello.vsix`, their `SHA256SUMS`, build provenance for each, and the version's section of `CHANGELOG.md` as its notes. Run by hand from the Actions page, the workflow is a dry run: it builds and checks as a tag does, and publishes nothing.
+
+A version is written as Snello's are. While the extension is built alongside an alpha of Snello, it carries a pre-release suffix of its own, `0.1.0-alpha.1`, `0.1.0-alpha.2`, and each is published as a pre-release; from `0.1.0`, which comes with Snello's 0.1.0, it carries none, and is a release. Each release has its section in `CHANGELOG.md`, `## 0.1.0-alpha.2` and what it changes, which is the release's notes and the extension's Changelog tab; the workflow refuses a version whose section is missing or empty, and CI runs the same check on every pull request.
+
+`package.json`'s `snello.minimum` names the oldest Snello the release works with, which the README says too. While that Snello is a pre-release, the extension's release must be one: the workflow refuses a version without a suffix. That Snello must be released before the extension's tag is pushed, which the workflow checks too. Raise `snello.minimum` when a release needs a newer Snello, and the README's line with it. The Marketplace takes no version with a suffix, so once it is published to, it gets the releases from 0.1.0 on.
 
 ## Conduct
 

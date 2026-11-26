@@ -7,3 +7,4 @@ test/**
 .github/**
 AGENTS.md
 CONTRIBUTING.md
+release/**
