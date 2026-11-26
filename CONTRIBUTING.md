@@ -48,7 +48,7 @@ git tag v0.1.0-alpha.2
 git push origin v0.1.0-alpha.2
 ```
 
-`.github/workflows/release.yml` then checks that the tag names `package.json`'s version, runs the checks and the tests, packages the extension, and publishes a GitHub release with the extension as `snello-0.1.0-alpha.2.vsix` and as `snello.vsix`, their `SHA256SUMS`, build provenance for each, and the version's section of `CHANGELOG.md` as its notes. Run by hand from the Actions page, the workflow is a dry run: it builds and checks as a tag does, and publishes nothing.
+`.github/workflows/release.yml` then checks that the tag names `package.json`'s version, runs the checks and the tests, packages the extension, and publishes a GitHub release with the extension as `snello.vsix`, a name the same in every release, its `SHA256SUMS`, its build provenance, and the version's section of `CHANGELOG.md` as its notes. Run by hand from the Actions page, the workflow is a dry run: it builds and checks as a tag does, and publishes nothing.
 
 A version is written as Snello's are. While the extension is built alongside an alpha of Snello, it carries a pre-release suffix of its own, `0.1.0-alpha.1`, `0.1.0-alpha.2`, and each is published as a pre-release; from `0.1.0`, which comes with Snello's 0.1.0, it carries none, and is a release. Each release has its section in `CHANGELOG.md`, `## 0.1.0-alpha.2` and what it changes, which is the release's notes and the extension's Changelog tab; the workflow refuses a version whose section is missing or empty, and CI runs the same check on every pull request.
 
