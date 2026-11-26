@@ -56,8 +56,8 @@ The extension is not on the Marketplace yet. Build it from this repository:
 git clone https://github.com/snello-lang/vscode-extension.git
 cd vscode-extension
 npm ci
-npx @vscode/vsce package
-code --install-extension snello-0.0.1.vsix
+npm run package
+code --install-extension bin/snello.vsix
 ```
 
 ## Settings
@@ -84,6 +84,8 @@ A launch configuration of type `snello` runs or debugs a program, or with `"mode
 Programs and tests run only in a trusted workspace; in Restricted Mode the extension highlights and checks as before, and runs nothing.
 
 ## Development
+
+[CONTRIBUTING.md](CONTRIBUTING.md) says how to find work and what a pull request needs; everyone follows [the code of conduct](CODE_OF_CONDUCT.md).
 
 The extension needs VS Code 1.91 or later. Run `npm ci` once, then open this folder in VS Code and press <kbd>F5</kbd>: a second window opens with the extension loaded; open any `.snello` file or `snello.mod` in it, such as one from the Snello repository's `examples/`. After editing the grammar, reload that window with <kbd>Cmd</kbd>+<kbd>R</kbd> to see the change.
 

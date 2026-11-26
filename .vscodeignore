@@ -1,5 +1,9 @@
 .vscode/**
 .gitignore
 **/*.vsix
+bin/**
 images/logo-*.png
 test/**
+.github/**
+AGENTS.md
+CONTRIBUTING.md

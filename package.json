@@ -266,7 +266,8 @@
     "onCommand:snello.restartServer"
   ],
   "scripts": {
-    "test": "node --test \"test/**/*.test.js\""
+    "test": "node --test \"test/**/*.test.js\"",
+    "package": "node -e \"require('fs').mkdirSync('bin', { recursive: true })\" && npx --yes @vscode/vsce@4.1.1 package --out bin/snello.vsix"
   },
   "overrides": {
     "minimatch": "^11.0.9"
