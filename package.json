@@ -49,6 +49,10 @@
     "languages": [
       {
         "id": "snello",
+        "icon": {
+          "light": "./images/snello-file.svg",
+          "dark": "./images/snello-file.svg"
+        },
         "aliases": [
           "Snello",
           "snello"
@@ -60,6 +64,10 @@
       },
       {
         "id": "snello.mod",
+        "icon": {
+          "light": "./images/snello-mod.svg",
+          "dark": "./images/snello-mod.svg"
+        },
         "aliases": [
           "Snello Module File"
         ],
@@ -70,6 +78,10 @@
       },
       {
         "id": "snello.lock",
+        "icon": {
+          "light": "./images/snello-mod.svg",
+          "dark": "./images/snello-mod.svg"
+        },
         "aliases": [
           "Snello Lock File"
         ],

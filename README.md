@@ -26,6 +26,7 @@
 | **Debug** | Breakpoints in `.snello` files, stepping, the call stack and the variables, which show as the program writes them, for a program or for one test through the Testing view's Debug button. Each session builds the program for the debugger, so Restart runs the code as it now is. The extension starts `lldb-dap` on macOS and gdb 14 or later on Linux, both tested; on Windows it starts `lldb-dap` from LLVM, which is not tested yet, and `snello debug`, which runs `cdb`, is the tested way to debug there. |
 | **Completion** | After a dot, the members of what is before it; on a name, every name visible there; in an import, the packages. |
 | **Syntax highlighting** | Keywords, declarations and calls; the predeclared types, traits and functions; numbers in every base; strings with their escapes and `fmt` verbs; raw strings and characters. |
+| **File icons** | `.snello` files, `snello.mod` and `snello.lock` show Snello's icons in the Explorer and on the editor's tabs, under any file icon theme that has no icon of its own for them, such as the default, Seti. A theme with its own icon for them shows that one, and Minimal and None show no file icons. |
 | **Comments** | Toggle line comments with <kbd>Cmd</kbd>+<kbd>/</kbd> and block comments with <kbd>Shift</kbd>+<kbd>Option</kbd>+<kbd>A</kbd> (<kbd>Ctrl</kbd> and <kbd>Alt</kbd> elsewhere). |
 | **Brackets** | Matching, auto-closing pairs and surrounding a selection with brackets or quotes. |
 | **Indentation** | The next line indents after an opening bracket, and a closing one moves back out. |
@@ -110,6 +111,7 @@ The extension needs VS Code 1.91 or later. Run `npm ci` once, then open this fol
 | `syntaxes/snello.tmLanguage.json` | The TextMate grammar behind the highlighting |
 | `syntaxes/snello.mod.tmLanguage.json` | The grammar of `snello.mod` |
 | `syntaxes/snello.lock.tmLanguage.json` | The grammar of `snello.lock` |
+| `images/snello-file.svg`, `images/snello-mod.svg` | The icons of `.snello` files, and of `snello.mod` and `snello.lock` |
 
 To see the scopes the grammar gives any token, run **Developer: Inspect Editor Tokens and Scopes** from the Command Palette.
 
