@@ -2,7 +2,7 @@
   "name": "snello",
   "displayName": "Snello",
   "description": "Snello language support for Visual Studio Code: errors as you type, navigation, tests, running and debugging",
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0-alpha.2",
   "publisher": "snello-lang",
   "license": "BSD-3-Clause",
   "icon": "images/icon.png",
@@ -49,6 +49,10 @@
     "languages": [
       {
         "id": "snello",
+        "icon": {
+          "light": "./images/snello-file.svg",
+          "dark": "./images/snello-file.svg"
+        },
         "aliases": [
           "Snello",
           "snello"
@@ -60,6 +64,10 @@
       },
       {
         "id": "snello.mod",
+        "icon": {
+          "light": "./images/snello-mod.svg",
+          "dark": "./images/snello-mod.svg"
+        },
         "aliases": [
           "Snello Module File"
         ],
@@ -70,6 +78,10 @@
       },
       {
         "id": "snello.lock",
+        "icon": {
+          "light": "./images/snello-mod.svg",
+          "dark": "./images/snello-mod.svg"
+        },
         "aliases": [
           "Snello Lock File"
         ],
