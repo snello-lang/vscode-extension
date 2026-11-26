@@ -1,0 +1,27 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Renovate keeps current what the repository pins: the actions every workflow pins by commit, and the extension's npm dependency, vscode-languageclient, with its lock file. One pull request a week for each, early on Monday, its commit a Conventional Commit of type ci for the actions and chore for npm, which commitlint accepts; the pull request's commits are rebased when main moves, so a merge needs no hand.",
+  "extends": [
+    "config:recommended",
+    "helpers:pinGitHubActionDigests",
+    ":rebaseStalePrs"
+  ],
+  "enabledManagers": ["github-actions", "npm"],
+  "schedule": ["before 6am on monday"],
+  "timezone": "UTC",
+  "semanticCommits": "enabled",
+  "labels": ["dependencies"],
+  "packageRules": [
+    {
+      "matchManagers": ["github-actions"],
+      "groupName": "actions",
+      "semanticCommitType": "ci",
+      "semanticCommitScope": "actions"
+    },
+    {
+      "matchManagers": ["npm"],
+      "semanticCommitType": "chore",
+      "semanticCommitScope": "deps"
+    }
+  ]
+}

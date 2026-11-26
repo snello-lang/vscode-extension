@@ -21,6 +21,9 @@
 | **Go to definition** | From a name to its declaration, in the module, a module it requires or the standard library. |
 | **Find references and rename** | Every use of a name across the module, and a rename of all of them at once, refused when the program would no longer compile or would mean something else. |
 | **Outline and symbols** | A file's declarations as a tree, and every declaration of the module found by a few of its letters. |
+| **Tests** | The Testing view lists every package's tests, benchmarks and examples, as the language server finds them, and a run button sits beside each one. Run a test, a file, a package or everything; a subtest shows under its test as it runs. A failed check is shown at its line, and when it compared two values, as `expect.Equal` does, as a diff of what it got and what it wanted. A continuous run runs a package's tests again each time one of its files is saved. |
+| **Run** | **Run** and **Debug** above every `func main`, **Snello: Run Program**, and the Run button of the editor's title bar run the program in the integrated terminal, where it reads your input and <kbd>Ctrl</kbd>+<kbd>C</kbd> stops it. A `snello` launch configuration sets its arguments, environment, directory and backend for <kbd>F5</kbd> and **Run Without Debugging**. |
+| **Debug** | Breakpoints in `.snello` files, stepping, the call stack and the variables, which show as the program writes them, for a program or for one test through the Testing view's Debug button. Each session builds the program for the debugger, so Restart runs the code as it now is. The extension starts `lldb-dap` on macOS and gdb 14 or later on Linux, both tested; on Windows it starts `lldb-dap` from LLVM, which is not tested yet, and `snello debug`, which runs `cdb`, is the tested way to debug there. |
 | **Completion** | After a dot, the members of what is before it; on a name, every name visible there; in an import, the packages. |
 | **Syntax highlighting** | Keywords, declarations and calls; the predeclared types, traits and functions; numbers in every base; strings with their escapes and `fmt` verbs; raw strings and characters. |
 | **Comments** | Toggle line comments with <kbd>Cmd</kbd>+<kbd>/</kbd> and block comments with <kbd>Shift</kbd>+<kbd>Option</kbd>+<kbd>A</kbd> (<kbd>Ctrl</kbd> and <kbd>Alt</kbd> elsewhere). |
@@ -45,7 +48,7 @@ func area(s Shape) f64 {
 
 ## Installation
 
-The extension starts Snello's language server, which is part of the `snello` command, so it needs Snello installed: the [Snello README](https://github.com/snello-lang/snello#quick-start) has the one-line install. The extension finds `snello` on the `PATH`; if it is elsewhere, set **Snello: Server Path** (`snello.serverPath`) to the command's absolute path, and the server starts again with it. Without `snello`, the extension says so once and highlights as before. In Restricted Mode, the folder's own settings cannot choose the command; the server, which only reads files, runs as anywhere else.
+The extension starts Snello's language server, which is part of the `snello` command, so it needs Snello installed: the [Snello README](https://github.com/snello-lang/snello#quick-start) has the one-line install. The extension finds `snello` on the `PATH`; if it is elsewhere, set **Snello: Server Path** (`snello.serverPath`) to the command's absolute path, and the server starts again with it. **Snello: Restart Language Server** starts it again at any time, after a new `snello` is installed for instance. Without `snello`, the extension says so once and highlights as before. In Restricted Mode, the folder's own settings cannot choose the command; the server, which only reads files, runs as anywhere else.
 
 The extension is not on the Marketplace yet. Build it from this repository:
 
@@ -53,24 +56,55 @@ The extension is not on the Marketplace yet. Build it from this repository:
 git clone https://github.com/snello-lang/vscode-extension.git
 cd vscode-extension
 npm ci
-npx @vscode/vsce package
-code --install-extension snello-0.0.1.vsix
+npm run package
+code --install-extension bin/snello.vsix
 ```
 
 ## Settings
 
 | Setting | What it does |
 |---|---|
-| `snello.serverPath` | The absolute path of the `snello` command the server runs as, `snello lsp`; empty, the first `snello` on the `PATH` |
+| `snello.serverPath` | The absolute path of the `snello` command the server runs as, `snello lsp`, and that runs, tests and builds; empty, the first `snello` on the `PATH` |
+| `snello.backend` | The backend programs and tests are built through, `llvm` or `c`; empty, the command's default |
+| `snello.debugAdapterPath` | The debug adapter a program is debugged through, `lldb-dap` or `gdb`; empty, `lldb-dap` on macOS and Windows, found through `xcrun` or the `PATH`, and `gdb` on Linux |
+
+A launch configuration of type `snello` runs or debugs a program, or with `"mode": "test"` debugs the tests `-run` picks:
+
+```json
+{
+  "type": "snello",
+  "request": "launch",
+  "name": "Debug a test",
+  "mode": "test",
+  "program": "${workspaceFolder}/shapes",
+  "args": ["-run", "^TestArea$"]
+}
+```
+
+Programs and tests run only in a trusted workspace; in Restricted Mode the extension highlights and checks as before, and runs nothing.
 
 ## Development
 
-Run `npm ci` once, then open this folder in VS Code and press <kbd>F5</kbd>. A second window opens with the extension loaded; open any `.snello` file or `snello.mod` in it, such as one from the Snello repository's `examples/`. After editing the grammar, reload that window with <kbd>Cmd</kbd>+<kbd>R</kbd> to see the change.
+[CONTRIBUTING.md](CONTRIBUTING.md) says how to find work and what a pull request needs; everyone follows [the code of conduct](CODE_OF_CONDUCT.md).
+
+The extension needs VS Code 1.91 or later. Run `npm ci` once, then open this folder in VS Code and press <kbd>F5</kbd>: a second window opens with the extension loaded; open any `.snello` file or `snello.mod` in it, such as one from the Snello repository's `examples/`. After editing the grammar, reload that window with <kbd>Cmd</kbd>+<kbd>R</kbd> to see the change.
 
 | Path | What it holds |
 |---|---|
-| `package.json` | The `snello` language and the `.snello` extension, the `snello.mod` and `snello.lock` languages and their file names, the grammar each uses, the setting, what Restricted Mode allows, and the one dependency, `vscode-languageclient` |
-| `extension.js` | The client: it starts `snello lsp` the first time a Snello file opens in a window, starts it again when `snello.serverPath` changes, and stops it when the window closes; every feature is the server's |
+| `package.json` | The `snello` language and the `.snello` extension, the `snello.mod` and `snello.lock` languages and their file names, the grammar each uses, the settings, the `snello` debug type and its launch configuration, the command, what Restricted Mode allows, and the one dependency, `vscode-languageclient` |
+| `extension.js` | Starts the parts below |
+| `client.js` | The client: it starts `snello lsp` the first time a Snello file opens in a window, starts it again when `snello.serverPath` changes, and stops it when the window closes; every language feature is the server's, and it asks the server for the runnables, `snello/runnables` |
+| `command.js` | Where the `snello` command is, and the backend flag a run is given |
+| `tests.js` | The Testing view: the tree from the runnables, a run as `snello test -json`, the Debug and continuous profiles |
+| `events.js` | The events of `snello test -json` read as a run goes, with no editor in it, so `npm test` tests it |
+| `run.js` | The Run and Debug lenses, the `snello` launch configuration, and a program run in the integrated terminal |
+| `debug.js` | Each session's build for the debugger, `snello build -debug -o` or `snello test -c -debug -o`, and the relay to the debugger's adapter, started with the setup `snello debug -setup` prints |
+| `tree.js` | What a run of tests asks of each package and enqueues, and which tests leave the tree |
+| `launch.js` | Where a launch configuration's program is, and the commands that run it, build it and debug it |
+| `dap.js` | The Debug Adapter Protocol's framing, and the two messages the relay changes |
+| `processes.js` | The `snello` command started in a process group of its own, so that a stop ends it and all it started |
+| `trust.js` | Nothing runs in Restricted Mode |
+| `test/` | The tests of `events.js`, `tree.js`, `processes.js`, `launch.js` and `dap.js`, under Node's own runner: `npm test` |
 | `language-configuration.json` | Comments, brackets, auto-closing pairs and indentation |
 | `language-configuration.mod.json` | The line comment of `snello.mod` |
 | `syntaxes/snello.tmLanguage.json` | The TextMate grammar behind the highlighting |

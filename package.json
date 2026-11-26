@@ -1,7 +1,7 @@
 {
   "name": "snello",
   "displayName": "Snello",
-  "description": "Snello language support for Visual Studio Code",
+  "description": "Snello language support for Visual Studio Code: errors as you type, navigation, tests, running and debugging",
   "version": "0.0.1",
   "publisher": "snello-lang",
   "license": "BSD-3-Clause",
@@ -14,25 +14,31 @@
     "snello",
     "syntax",
     "highlighting",
-    "language server"
+    "language server",
+    "testing",
+    "debugging"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/snello-lang/vscode-extension.git"
   },
   "engines": {
-    "vscode": "^1.90.0"
+    "vscode": "^1.91.0"
   },
   "categories": [
-    "Programming Languages"
+    "Programming Languages",
+    "Testing",
+    "Debuggers"
   ],
   "main": "./extension.js",
   "capabilities": {
     "untrustedWorkspaces": {
       "supported": "limited",
-      "description": "In Restricted Mode the folder cannot choose the snello command the language server runs.",
+      "description": "In Restricted Mode the folder cannot choose the snello command or the debugger, and no program or test is run.",
       "restrictedConfigurations": [
-        "snello.serverPath"
+        "snello.serverPath",
+        "snello.debugAdapterPath",
+        "snello.backend"
       ]
     }
   },
@@ -94,11 +100,176 @@
           "default": "",
           "scope": "machine-overridable",
           "markdownDescription": "The absolute path of the `snello` command the language server runs as `snello lsp`. Empty, the first `snello` on the `PATH`."
+        },
+        "snello.debugAdapterPath": {
+          "type": "string",
+          "default": "",
+          "scope": "machine-overridable",
+          "markdownDescription": "The absolute path of the debug adapter a program is debugged through: `lldb-dap`, or `gdb`, version 14 or later, whose adapter is `gdb -i dap`. Empty, `lldb-dap` on macOS and Windows, found through `xcrun` or the `PATH`, and `gdb` on Linux."
+        },
+        "snello.backend": {
+          "type": "string",
+          "enum": [
+            "",
+            "llvm",
+            "c"
+          ],
+          "default": "",
+          "markdownDescription": "The backend programs and tests are built through, `llvm` or `c`; empty, the `snello` command's default. A launch configuration's `backend` overrides it."
         }
       }
-    }
+    },
+    "commands": [
+      {
+        "command": "snello.runProgram",
+        "title": "Run Program",
+        "category": "Snello",
+        "icon": "$(play)",
+        "enablement": "isWorkspaceTrusted"
+      },
+      {
+        "command": "snello.restartServer",
+        "title": "Restart Language Server",
+        "category": "Snello"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "snello.runProgram",
+          "when": "editorLangId == snello"
+        }
+      ],
+      "editor/title/run": [
+        {
+          "command": "snello.runProgram",
+          "when": "resourceLangId == snello && isWorkspaceTrusted",
+          "group": "navigation"
+        }
+      ]
+    },
+    "debuggers": [
+      {
+        "type": "snello",
+        "label": "Snello",
+        "languages": [
+          "snello"
+        ],
+        "configurationAttributes": {
+          "launch": {
+            "required": [
+              "program"
+            ],
+            "properties": {
+              "program": {
+                "type": "string",
+                "description": "The program to run: a directory, or a file of a directory of programs of one file each.",
+                "default": "${fileDirname}"
+              },
+              "args": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "The program's arguments.",
+                "default": []
+              },
+              "env": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "Variables added to the program's environment.",
+                "default": {}
+              },
+              "cwd": {
+                "type": "string",
+                "description": "The directory the program runs in; the program's own when not given."
+              },
+              "backend": {
+                "type": "string",
+                "enum": [
+                  "llvm",
+                  "c"
+                ],
+                "description": "The backend the program is built through; the setting snello.backend's when not given."
+              },
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "program",
+                  "test"
+                ],
+                "description": "program runs the program; test runs the tests of the package in program, picked by -run in args.",
+                "default": "program"
+              }
+            }
+          }
+        },
+        "configurationSnippets": [
+          {
+            "label": "Snello: Launch program",
+            "description": "Run or debug the program in a directory",
+            "body": {
+              "type": "snello",
+              "request": "launch",
+              "name": "Launch program",
+              "program": "^\"\\${fileDirname}\""
+            }
+          },
+          {
+            "label": "Snello: Debug a test",
+            "description": "Debug one test of a package",
+            "body": {
+              "type": "snello",
+              "request": "launch",
+              "name": "Debug test",
+              "mode": "test",
+              "program": "^\"\\${fileDirname}\"",
+              "args": [
+                "-run",
+                "^TestName$"
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "breakpoints": [
+      {
+        "language": "snello"
+      }
+    ],
+    "taskDefinitions": [
+      {
+        "type": "snello",
+        "required": [
+          "program"
+        ],
+        "properties": {
+          "program": {
+            "type": "string",
+            "description": "The program the task runs, a directory or a file."
+          }
+        }
+      }
+    ]
   },
   "dependencies": {
-    "vscode-languageclient": "^9.0.1"
+    "vscode-languageclient": "^11.0.1"
+  },
+  "activationEvents": [
+    "workspaceContains:**/snello.mod",
+    "workspaceContains:**/*.snello",
+    "onDebugResolve:snello",
+    "onDebugDynamicConfigurations:snello",
+    "onCommand:snello.restartServer"
+  ],
+  "scripts": {
+    "test": "node --test \"test/**/*.test.js\"",
+    "package": "node -e \"require('fs').mkdirSync('bin', { recursive: true })\" && npx --yes @vscode/vsce@4.1.1 package --out bin/snello.vsix"
+  },
+  "overrides": {
+    "minimatch": "^11.0.9"
   }
 }

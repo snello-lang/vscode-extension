@@ -1,0 +1,50 @@
+# Checks every pull request: each module parses, the tests that need no
+# editor pass, and the extension packages, its .vsix attached to the run
+# so that a reviewer installs exactly what the change builds. On pull
+# requests and on nothing else: main takes changes through a pull
+# request alone, so the pull request's run tests what its merge puts on
+# main, and a run on the push to main would test it twice.
+#
+# The tests run under Node 22, whose test runner reads the glob npm test
+# gives it; the extension itself runs in VS Code's own Node.
+name: CI
+
+on:
+  pull_request:
+    # ready_for_review is not a default activity type: list it (plus the
+    # defaults) so marking a draft PR ready also starts a run.
+    types: [opened, synchronize, reopened, ready_for_review]
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Check, test and package
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install
+        run: npm ci
+      - name: Each module parses
+        run: for f in *.js test/*.js; do node --check "$f"; done
+      - name: Test
+        run: npm test
+      - name: Package
+        run: npm run package
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: snello-vsix
+          path: bin/snello.vsix
+          if-no-files-found: error
